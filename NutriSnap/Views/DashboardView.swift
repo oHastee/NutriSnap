@@ -1,26 +1,50 @@
-//
-//  DashboardView.swift
-//  NutriSnap
-//
-//  Created by Oscar Piedrasanta Diaz on 2025-03-01.
-//
-
-
 import SwiftUI
 
 struct DashboardView: View {
-    // Mock data for demonstration
-    @State private var currentDate: String = "Fri, Feb 7"
+    // MARK: - Date Navigation
+    @State private var selectedDate: Date = Date()
+    
+    // MARK: - Daily Calorie Goal and Meal Data (Mock Data)
+    let dailyGoal: Int = 1200
+    
+    // Consumed calories per meal (could be dynamic later)
+    let breakfastCalories: Int = 50
+    let lunchCalories: Int = 300
+    let dinnerCalories: Int = 250
+    let snackCalories: Int = 100
+    
+    // Computed Properties
+    var totalConsumed: Int {
+        breakfastCalories + lunchCalories + dinnerCalories + snackCalories
+    }
+    
+    var remaining: Int {
+        dailyGoal - totalConsumed
+    }
+    
+    var progress: Double {
+        // If total consumed exceeds the goal, fill the ring fully.
+        let ratio = Double(totalConsumed) / Double(dailyGoal)
+        return min(ratio, 1.0)
+    }
+    
+    var ringColor: Color {
+        remaining >= 0 ? Color.green : Color.red
+    }
+    
+    var formattedDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEE, MMM d"
+        return formatter.string(from: selectedDate)
+    }
     
     var body: some View {
         NavigationView {
             VStack(spacing: 16) {
-                
-                // MARK: - Top Bar (Date + Arrows)
+                // MARK: - Top Bar (Date Navigation)
                 HStack {
                     Button(action: {
-                        // Decrement date (placeholder)
-                        print("Previous date tapped")
+                        selectedDate = Calendar.current.date(byAdding: .day, value: -1, to: selectedDate) ?? selectedDate
                     }) {
                         Image(systemName: "chevron.left")
                             .font(.title)
@@ -29,14 +53,13 @@ struct DashboardView: View {
                     
                     Spacer()
                     
-                    Text(currentDate)
+                    Text(formattedDate)
                         .font(.headline)
                     
                     Spacer()
                     
                     Button(action: {
-                        // Increment date (placeholder)
-                        print("Next date tapped")
+                        selectedDate = Calendar.current.date(byAdding: .day, value: 1, to: selectedDate) ?? selectedDate
                     }) {
                         Image(systemName: "chevron.right")
                             .font(.title)
@@ -46,23 +69,30 @@ struct DashboardView: View {
                 .padding(.horizontal)
                 .padding(.top, 16)
                 
-                // MARK: - Circle with "XXX Remaining"
+                // MARK: - Daily Progress Ring
                 ZStack {
-                    Circle()
-                        .stroke(Color.green, lineWidth: 10)
-                        .frame(width: 120, height: 120)
+                    DailyProgressRing(progress: progress, ringColor: ringColor)
                     
                     VStack {
-                        Text("1200")
-                            .font(.title)
-                            .fontWeight(.bold)
-                        Text("Remaining")
-                            .font(.subheadline)
+                        if remaining >= 0 {
+                            Text("\(remaining)")
+                                .font(.title)
+                                .fontWeight(.bold)
+                            Text("Remaining")
+                                .font(.subheadline)
+                        } else {
+                            // Display absolute value when over the goal
+                            Text("\(abs(remaining))")
+                                .font(.title)
+                                .fontWeight(.bold)
+                            Text("Over")
+                                .font(.subheadline)
+                        }
                     }
                 }
                 .padding(.top, 8)
                 
-                // MARK: - Macros (Carbs, Protein, Fats)
+                // MARK: - Macros (Placeholder Data)
                 HStack(spacing: 40) {
                     VStack {
                         Text("Carbs")
@@ -90,30 +120,30 @@ struct DashboardView: View {
                 }
                 .padding(.vertical)
                 
-                // MARK: - Meals List
+                // MARK: - Meals List with Dynamic Progress Rings
                 VStack(spacing: 16) {
                     MealRowView(
                         iconName: "sunrise.fill",
                         mealName: "Breakfast",
-                        currentCalories: 300,
+                        currentCalories: breakfastCalories,
                         totalCalories: 500
                     )
                     MealRowView(
                         iconName: "sun.max.fill",
                         mealName: "Lunch",
-                        currentCalories: 400,
+                        currentCalories: lunchCalories,
                         totalCalories: 600
                     )
                     MealRowView(
                         iconName: "moon.stars.fill",
                         mealName: "Dinner",
-                        currentCalories: 500,
+                        currentCalories: dinnerCalories,
                         totalCalories: 700
                     )
                     MealRowView(
                         iconName: "takeoutbag.and.cup.and.straw.fill",
                         mealName: "Snacks",
-                        currentCalories: 100,
+                        currentCalories: snackCalories,
                         totalCalories: 300
                     )
                 }
@@ -127,12 +157,42 @@ struct DashboardView: View {
     }
 }
 
-// MARK: - MealRowView (Reusable Row)
+// MARK: - DailyProgressRing View
+struct DailyProgressRing: View {
+    let progress: Double  // 0.0 to 1.0
+    let ringColor: Color
+    var size: CGFloat = 120
+    var lineWidth: CGFloat = 10
+    
+    var body: some View {
+        ZStack {
+            // Background circle
+            Circle()
+                .stroke(Color.gray.opacity(0.3), lineWidth: lineWidth)
+                .frame(width: size, height: size)
+            
+            // Foreground progress
+            Circle()
+                .trim(from: 0, to: CGFloat(progress))
+                .stroke(ringColor, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+                .rotationEffect(Angle(degrees: -90))
+                .frame(width: size, height: size)
+        }
+    }
+}
+
+// MARK: - MealRowView (Reusable)
 struct MealRowView: View {
     let iconName: String
     let mealName: String
     let currentCalories: Int
     let totalCalories: Int
+    
+    // Calculate the progress for this meal
+    var progress: Double {
+        guard totalCalories > 0 else { return 0 }
+        return min(Double(currentCalories) / Double(totalCalories), 1.0)
+    }
     
     var body: some View {
         HStack {
@@ -148,12 +208,30 @@ struct MealRowView: View {
             Text("\(currentCalories)/\(totalCalories) Cal")
                 .font(.subheadline)
             
-            // Placeholder circle (could be a mini progress ring)
-            Circle()
-                .stroke(Color.green, lineWidth: 2)
-                .frame(width: 24, height: 24)
+            // Dynamic progress ring for this meal
+            ProgressRing(progress: progress)
         }
         .padding(.vertical, 4)
+    }
+}
+
+// MARK: - ProgressRing (Reusable for Meal Rows)
+struct ProgressRing: View {
+    let progress: Double  // 0.0 to 1.0
+    var lineWidth: CGFloat = 4
+    var size: CGFloat = 24
+    
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(Color.gray.opacity(0.3), lineWidth: lineWidth)
+                .frame(width: size, height: size)
+            Circle()
+                .trim(from: 0, to: CGFloat(progress))
+                .stroke(Color.green, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+                .rotationEffect(Angle(degrees: -90))
+                .frame(width: size, height: size)
+        }
     }
 }
 
