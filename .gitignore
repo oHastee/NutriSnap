@@ -1,0 +1,59 @@
+# ----------------------------
+# macOS Files
+# ----------------------------
+.DS_Store
+*.swp
+*.swo
+
+# ----------------------------
+# Xcode Specific
+# ----------------------------
+build/
+DerivedData/
+*.xcscmblueprint
+*.xcuserdatad
+xcuserdata/
+
+# ----------------------------
+# Swift Package Manager
+# ----------------------------
+Packages/
+Package.pins
+Package.resolved
+
+# ----------------------------
+# Carthage
+# ----------------------------
+Carthage/Build/
+Carthage/Checkouts/
+
+# ----------------------------
+# CocoaPods
+# ----------------------------
+Pods/
+Podfile.lock
+
+# ----------------------------
+# Fastlane
+# ----------------------------
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/Preview.png
+fastlane/test_output
+
+# ----------------------------
+# Archives
+# ----------------------------
+*.xcarchive
+
+# ----------------------------
+# Playgrounds
+# ----------------------------
+timeline.xctimeline
+playground.xcworkspace
+
+# ----------------------------
+# Other
+# ----------------------------
+*.orig
+
