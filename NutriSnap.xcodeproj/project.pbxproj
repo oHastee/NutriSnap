@@ -168,6 +168,7 @@
 /* Begin PBXProject section */
 		11BF9E2E2D73A4C500CBDC8F /* Project object */ = {
 			isa = PBXProject;
+			compatibilityVersion = "Xcode 15.4";
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
