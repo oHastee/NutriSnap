@@ -19,7 +19,7 @@ struct Meal: Identifiable {
     let imageName: String?
 }
 
-// MARK: - MealTypeView 
+// MARK: - MealTypeView
 /// Shows a list of meals for the day + filtering by meal type.
 struct MealTypeView: View {
     
@@ -80,79 +80,79 @@ struct MealTypeView: View {
     }
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                
-                // MARK: - Top Bar (Left/Right Arrows + Centered Date)
-                HStack {
-                    // Left arrow (previous day)
-                    Button(action: {
-                        selectedDate = Calendar.current.date(byAdding: .day, value: -1, to: selectedDate) ?? selectedDate
-                    }) {
-                        Image(systemName: "chevron.left")
-                            .font(.title2)
-                            .foregroundColor(.blue)
-                    }
-                    
-                    Spacer()
-                    
-                    // Centered date (tap to open date picker)
-                    Text(formattedDate)
-                        .font(.headline)
-                        .onTapGesture {
-                            showDatePicker = true
-                        }
-                    
-                    Spacer()
-                    
-                    // Right arrow (next day)
-                    Button(action: {
-                        selectedDate = Calendar.current.date(byAdding: .day, value: 1, to: selectedDate) ?? selectedDate
-                    }) {
-                        Image(systemName: "chevron.right")
-                            .font(.title2)
-                            .foregroundColor(.blue)
-                    }
-                }
-                .padding()
-                
-                Divider()
-                
-                // MARK: - Meal Type Filter (Segmented Control)
-                Picker("Meal Type", selection: $mealTypeFilter) {
-                    Text("All").tag(nil as MealType?)
-                    ForEach(MealType.allCases) { mealType in
-                        Text(mealType.rawValue).tag(mealType as MealType?)
-                    }
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding()
-                
-                // MARK: - List of Meals for Selected Date
-                ScrollView {
-                    if filteredMeals.isEmpty {
-                        Text("No meals for this date.")
-                            .foregroundColor(.gray)
-                            .padding()
-                    } else {
-                        VStack(spacing: 12) {
-                            // Navigate to detail (MealLogView) on tap
-                            ForEach(filteredMeals) { meal in
-                                NavigationLink(destination: MealLogView(meal: meal)) {
-                                    MealCardView(meal: meal)
-                                }
-                            }
-                        }
-                        .padding(.horizontal)
-                        .padding(.bottom, 16)
-                    }
+        VStack(spacing: 0) {
+            
+            // MARK: - Top Bar (Left/Right Arrows + Centered Date)
+            HStack {
+                // Left arrow (previous day)
+                Button(action: {
+                    selectedDate = Calendar.current.date(byAdding: .day, value: -1, to: selectedDate) ?? selectedDate
+                }) {
+                    Image(systemName: "chevron.left")
+                        .font(.title2)
+                        .foregroundColor(.blue)
                 }
                 
                 Spacer()
+                
+                // Centered date (tap to open date picker)
+                Text(formattedDate)
+                    .font(.headline)
+                    .onTapGesture {
+                        showDatePicker = true
+                    }
+                
+                Spacer()
+                
+                // Right arrow (next day)
+                Button(action: {
+                    selectedDate = Calendar.current.date(byAdding: .day, value: 1, to: selectedDate) ?? selectedDate
+                }) {
+                    Image(systemName: "chevron.right")
+                        .font(.title2)
+                        .foregroundColor(.blue)
+                }
             }
-            .navigationBarHidden(true)
+            .padding()
+            
+            Divider()
+            
+            // MARK: - Meal Type Filter (Segmented Control)
+            Picker("Meal Type", selection: $mealTypeFilter) {
+                Text("All").tag(nil as MealType?)
+                ForEach(MealType.allCases) { mealType in
+                    Text(mealType.rawValue).tag(mealType as MealType?)
+                }
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            .padding()
+            
+            // MARK: - List of Meals for Selected Date
+            ScrollView {
+                if filteredMeals.isEmpty {
+                    Text("No meals for this date.")
+                        .foregroundColor(.gray)
+                        .padding()
+                } else {
+                    VStack(spacing: 12) {
+                        // Navigate to detail (MealLogView) on tap
+                        ForEach(filteredMeals) { meal in
+                            NavigationLink(destination: MealLogView(meal: meal)) {
+                                MealCardView(meal: meal)
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 16)
+                }
+            }
+            
+            Spacer()
         }
-        .navigationViewStyle(StackNavigationViewStyle())
+        // Hide local nav bar
+        .navigationBarHidden(true)
+        // Only ignore the bottom safe area so the top bar is fully visible
+        .edgesIgnoringSafeArea(.bottom)
         
         // MARK: - DatePicker Sheet
         .sheet(isPresented: $showDatePicker) {
@@ -217,7 +217,7 @@ struct MealCardView: View {
     }
 }
 
-// MARK: - MealLogView
+// MARK: - MealLogView (unchanged)
 /// Shows more information about a specific meal/snack (macro nutrients, donut chart, etc.)
 struct MealLogView: View {
     @Environment(\.presentationMode) var presentationMode
@@ -328,7 +328,7 @@ struct MealLogView: View {
     }
 }
 
-// MARK: - DonutChartView
+// MARK: - DonutChartView (unchanged)
 /// A donut chart showing carbs/protein/fat, with total calories in the center.
 struct DonutChartView: View {
     let totalCalories: Int
@@ -411,7 +411,7 @@ struct DonutChartView: View {
     }
 }
 
-// MARK: - DonutArc
+// MARK: - DonutArc (unchanged)
 /// Draws a single arc for the donut chart
 struct DonutArc: View {
     let startAngle: Angle

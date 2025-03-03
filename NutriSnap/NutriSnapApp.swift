@@ -11,7 +11,7 @@ import SwiftUI
 struct NutriSnapApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootContainerView()
         }
     }
 }
