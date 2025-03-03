@@ -1,15 +1,9 @@
-//
-//  SignInView.swift
-//  NutriSnap
-//
-//  Created by Valeria Arce on 2025-03-01.
-//
-
 import SwiftUI
 
 struct SignInView: View {
     @StateObject private var viewModel = SignInViewModel()
-    
+    @State private var isAuthenticated = false  // Track authentication state
+
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
@@ -17,18 +11,18 @@ struct SignInView: View {
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .padding(.top, 40)
-                
+
                 // Email
                 TextField("Email", text: $viewModel.email)
                     .keyboardType(.emailAddress)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding(.horizontal)
-                
+
                 // Password
                 SecureField("Password", text: $viewModel.password)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding(.horizontal)
-                
+
                 // Forgot Password
                 HStack {
                     Spacer()
@@ -41,10 +35,14 @@ struct SignInView: View {
                     }
                     .padding(.trailing)
                 }
-                
+
                 // Sign In Button
                 Button(action: {
-                    viewModel.signIn()
+                    viewModel.signIn { success in
+                        if success {
+                            isAuthenticated = true  // Set state to navigate
+                        }
+                    }
                 }) {
                     Text("Sign In")
                         .foregroundColor(.white)
@@ -55,7 +53,7 @@ struct SignInView: View {
                 }
                 .padding(.horizontal)
                 .padding(.top, 20)
-                
+
                 // Sign Up Navigation
                 HStack {
                     Text("Don't have an account?")
@@ -66,17 +64,15 @@ struct SignInView: View {
                     }
                 }
                 .padding(.top, 10)
-                
+
                 Spacer()
+                
+                // Navigation to Dashboard when authenticated
+                NavigationLink(destination: DashboardView(), isActive: $isAuthenticated) {
+                    EmptyView()
+                }
             }
             .navigationBarHidden(true)
         }
-    }
-}
-
-struct SignInView_Previews: PreviewProvider {
-    static var previews: some View {
-        SignInView()
-            .previewDevice("iPhone 14 Plus")
     }
 }
