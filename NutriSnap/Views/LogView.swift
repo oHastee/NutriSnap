@@ -3,7 +3,7 @@ import SwiftUI
 struct LogView: View {
     @State private var image: UIImage? = nil
     @State private var showImagePicker = false
-    @State private var sourceType: UIImagePickerController.SourceType = .photoLibrary
+    @State private var sourceType: UIImagePickerController.SourceType = .camera // default to camera
     @State private var navigateToMealEntry = false
 
     var body: some View {
@@ -12,6 +12,8 @@ struct LogView: View {
 
             // Meal Scan Button
             Button(action: {
+                // Set the source to camera before showing the sheet
+                sourceType = .camera
                 showImagePicker = true
             }) {
                 ZStack {
@@ -37,7 +39,7 @@ struct LogView: View {
             }
             .padding()
 
-            // Manual Entry Button (Navigates to MealEntryView)
+            // Manual Entry Button
             Button(action: {
                 navigateToMealEntry = true
             }) {
@@ -67,7 +69,7 @@ struct LogView: View {
             Spacer()
         }
         .padding()
-        .background(Color.white.edgesIgnoringSafeArea(.all)) 
+        .background(Color.white.edgesIgnoringSafeArea(.all))
         .sheet(isPresented: $showImagePicker) {
             ImagePicker(image: $image, sourceType: sourceType)
         }
@@ -80,7 +82,7 @@ struct LogView: View {
                 protein: 0,
                 fats: 0,
                 isManualEntry: true
-            )) 
+            ))
         }
     }
 }
