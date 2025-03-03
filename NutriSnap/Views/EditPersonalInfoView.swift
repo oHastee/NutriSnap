@@ -80,15 +80,15 @@ struct EditPersonalInfoView: View {
             }
 
             // MARK: - Change Password Button
-//            Section {
-//                NavigationLink(destination: //ChangePasswordView()) {
-//                    HStack {
-//                        Image(systemName: "key.fill")
-//                            .foregroundColor(.orange)
-//                        Text("Change Password")
-//                    }
-//                }
-//            }
+            Section {
+                NavigationLink(destination: ChangePasswordView()) {
+                    HStack {
+                        Image(systemName: "key.fill")
+                            .foregroundColor(.orange)
+                        Text("Change Password")
+                    }
+                }
+            }
             
             // MARK: - Save Button (Green)
             Button(action: saveChanges) {
