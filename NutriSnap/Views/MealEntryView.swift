@@ -1,118 +1,179 @@
 import SwiftUI
 
 struct MealEntryView: View {
-    @State private var mealType: String = "Meal Type"
-    @State private var foodName: String = ""
-    @State private var calories: String = ""
-    @State private var carbohydrates: String = ""
-    @State private var protein: String = ""
-    @State private var fats: String = ""
     
+    // MARK: - Environment
+    @Environment(\.presentationMode) var presentationMode  // Allows dismissing the view
+
+    // MARK: - State Variables (Now Uses MealEntry Model)
+    @State var meal: MealEntry // ✅ Uses model for consistency
+
     let mealTypes = ["Breakfast", "Lunch", "Dinner", "Snack"]
 
+    // MARK: - Body
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
+        VStack(alignment: .leading, spacing: 16) {
             
-            Text("Entry")
-                .font(.title)
-                .fontWeight(.bold)
-            
-            // Meal Type Picker
+            // MARK: - Meal Type Picker
             Text("Meal Type")
                 .font(.headline)
             
-            Picker("Meal Type", selection: $mealType) {
-                Text("Meal Type").tag("Meal Type") 
-                ForEach(mealTypes, id: \.self) { type in
-                    Text(type).tag(type)
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color(.white))
+                    .frame(height: 44)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray, lineWidth: 1)
+                    )
+
+                Picker("Select Type", selection: $meal.foodName) { // Assuming `foodName` represents meal type
+                    ForEach(mealTypes, id: \.self) { type in
+                        Text(type).tag(type)
+                    }
                 }
+                .pickerStyle(MenuPickerStyle()) // Dropdown style
+                .frame(height: 44)
+                .padding(.horizontal, 8)
             }
-            .pickerStyle(MenuPickerStyle())
             .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color(.systemGray6))
-            .cornerRadius(8)
             
-            // Food Name
+            // MARK: - Food Name
             Text("Food Name")
                 .font(.headline)
             
-            TextField("e.g., Chicken Salad", text: $foodName)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding(.horizontal)
+            CustomTextField(placeholder: "e.g., Chicken Salad", text: $meal.foodName)
             
-            // Calories Input
+            // MARK: - Calories Input
             Text("Calories (kcal)")
                 .font(.headline)
             
-            TextField("Enter calories", text: $calories)
-                .keyboardType(.numberPad)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding(.horizontal)
+            CustomNumberField(placeholder: "Enter calories", value: $meal.calories)
             
-            // Macronutrients
+            // MARK: - Macronutrients
             Text("Macronutrients")
                 .font(.headline)
             
             VStack(spacing: 10) {
-                HStack {
-                    Text("Carbohydrates (g)")
-                    Spacer()
-                    TextField("0", text: $carbohydrates)
-                        .keyboardType(.numberPad)
-                        .frame(width: 80)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-                HStack {
-                    Text("Protein (g)")
-                    Spacer()
-                    TextField("0", text: $protein)
-                        .keyboardType(.numberPad)
-                        .frame(width: 80)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-                HStack {
-                    Text("Fats (g)")
-                    Spacer()
-                    TextField("0", text: $fats)
-                        .keyboardType(.numberPad)
-                        .frame(width: 80)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
+                NutrientRow(label: "Carbohydrates (g)", value: $meal.carbs)
+                NutrientRow(label: "Protein (g)", value: $meal.protein)
+                NutrientRow(label: "Fats (g)", value: $meal.fats)
             }
-            .padding(.horizontal)
             
             Spacer()
             
-            // Save Button
+            // MARK: - Save Button
             Button(action: {
                 // Action to save entry
+                presentationMode.wrappedValue.dismiss()
             }) {
                 Text("Save")
                     .frame(maxWidth: .infinity)
-                    .padding()
+                    .frame(height: 44)
                     .background(Color.green)
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }
-            .padding(.horizontal)
-
+            
         }
         .padding()
-        .navigationBarTitleDisplayMode(.inline) 
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            // Title in center
             ToolbarItem(placement: .principal) {
-                Text("Manual Entry")
+                Text("Edit Meal")
                     .font(.headline)
+            }
+            
+            // Dismiss Button (X) on top right
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Image(systemName: "xmark")
+                        .foregroundColor(.black)
+                }
             }
         }
     }
 }
 
+// MARK: - Reusable TextField View
+struct CustomTextField: View {
+    var placeholder: String
+    @Binding var text: String
+    var keyboardType: UIKeyboardType = .default
+
+    var body: some View {
+        TextField(placeholder, text: $text)
+            .keyboardType(keyboardType)
+            .padding(.horizontal, 8)
+            .frame(height: 44)
+            .background(Color(.white))
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.gray, lineWidth: 1)
+            )
+    }
+}
+
+// MARK: - Reusable Numeric Input Field
+struct CustomNumberField<Value: Numeric>: View {
+    var placeholder: String
+    @Binding var value: Value
+
+    var body: some View {
+        TextField(placeholder, value: $value, formatter: NumberFormatter())
+            .keyboardType(.numberPad)
+            .padding(.horizontal, 8)
+            .frame(height: 44)
+            .background(Color(.white))
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.gray, lineWidth: 1)
+            )
+    }
+}
+
+// MARK: - Reusable Nutrient Row View
+struct NutrientRow<Value: Numeric>: View {
+    var label: String
+    @Binding var value: Value
+
+    var body: some View {
+        HStack {
+            Text(label)
+            Spacer()
+            TextField("0", value: $value, formatter: NumberFormatter())
+                .keyboardType(.numberPad)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 8)
+                .frame(width: 80, height: 44)
+                .background(Color(.white))
+                .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.gray, lineWidth: 1)
+                )
+        }
+    }
+}
+
+// MARK: - Preview
 struct MealEntryView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            MealEntryView()
+            MealEntryView(meal: MealEntry(
+                date: Date(),
+                foodName: "Chicken Salad",
+                calories: 450,
+                carbs: 20,
+                protein: 40,
+                fats: 10,
+                isManualEntry: false
+            ))
         }
     }
 }
