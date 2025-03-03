@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SignInView: View {
     @StateObject private var viewModel = SignInViewModel()
+    @State private var navigateToRoot = false
     
     var body: some View {
         NavigationView {
@@ -18,18 +19,15 @@ struct SignInView: View {
                     .fontWeight(.bold)
                     .padding(.top, 40)
                 
-                // Email
                 TextField("Email", text: $viewModel.email)
                     .keyboardType(.emailAddress)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding(.horizontal)
                 
-                // Password
                 SecureField("Password", text: $viewModel.password)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding(.horizontal)
                 
-                // Forgot Password
                 HStack {
                     Spacer()
                     Button(action: {
@@ -42,9 +40,9 @@ struct SignInView: View {
                     .padding(.trailing)
                 }
                 
-                // Sign In Button
                 Button(action: {
                     viewModel.signIn()
+                    navigateToRoot = true
                 }) {
                     Text("Sign In")
                         .foregroundColor(.white)
@@ -56,7 +54,6 @@ struct SignInView: View {
                 .padding(.horizontal)
                 .padding(.top, 20)
                 
-                // Sign Up Navigation
                 HStack {
                     Text("Don't have an account?")
                     NavigationLink(destination: SignUpView()) {
@@ -70,6 +67,9 @@ struct SignInView: View {
                 Spacer()
             }
             .navigationBarHidden(true)
+        }
+        .fullScreenCover(isPresented: $navigateToRoot) {
+            RootContainerView()
         }
     }
 }

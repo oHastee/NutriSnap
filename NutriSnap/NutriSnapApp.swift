@@ -11,7 +11,8 @@ import SwiftUI
 struct NutriSnapApp: App {
     var body: some Scene {
         WindowGroup {
-            RootContainerView()
+            // Start with the Sign Up screen
+            SplashScreenView()
         }
     }
 }
