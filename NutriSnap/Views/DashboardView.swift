@@ -1,19 +1,16 @@
 import SwiftUI
 
 struct DashboardView: View {
-    // MARK: - Date Navigation
     @State private var selectedDate: Date = Date()
     
-    // MARK: - Daily Calorie Goal and Meal Data (Mock Data)
+    // Example daily goal and calories consumed (replace with dynamic data as needed)
     let dailyGoal: Int = 1200
-    
-    // Consumed calories per meal (could be dynamic later)
     let breakfastCalories: Int = 50
     let lunchCalories: Int = 300
     let dinnerCalories: Int = 250
     let snackCalories: Int = 100
     
-    // Computed Properties
+    // Computed properties
     var totalConsumed: Int {
         breakfastCalories + lunchCalories + dinnerCalories + snackCalories
     }
@@ -23,13 +20,12 @@ struct DashboardView: View {
     }
     
     var progress: Double {
-        // If total consumed exceeds the goal, fill the ring fully.
         let ratio = Double(totalConsumed) / Double(dailyGoal)
         return min(ratio, 1.0)
     }
     
     var ringColor: Color {
-        remaining >= 0 ? Color.green : Color.red
+        remaining >= 0 ? .green : .red
     }
     
     var formattedDate: String {
@@ -39,127 +35,107 @@ struct DashboardView: View {
     }
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 16) {
-                // MARK: - Top Bar (Date Navigation)
-                HStack {
-                    Button(action: {
-                        selectedDate = Calendar.current.date(byAdding: .day, value: -1, to: selectedDate) ?? selectedDate
-                    }) {
-                        Image(systemName: "chevron.left")
-                            .font(.title)
-                            .foregroundColor(.blue)
+        VStack(spacing: 16) {
+            // Date Navigation
+            HStack {
+                Button(action: {
+                    if let newDate = Calendar.current.date(byAdding: .day, value: -1, to: selectedDate) {
+                        selectedDate = newDate
                     }
-                    
-                    Spacer()
-                    
-                    Text(formattedDate)
-                        .font(.headline)
-                    
-                    Spacer()
-                    
-                    Button(action: {
-                        selectedDate = Calendar.current.date(byAdding: .day, value: 1, to: selectedDate) ?? selectedDate
-                    }) {
-                        Image(systemName: "chevron.right")
-                            .font(.title)
-                            .foregroundColor(.blue)
-                    }
+                }) {
+                    Image(systemName: "chevron.left")
+                        .font(.title)
+                        .foregroundColor(.blue)
                 }
-                .padding(.horizontal)
-                .padding(.top, 16)
-                
-                // MARK: - Daily Progress Ring
-                ZStack {
-                    DailyProgressRing(progress: progress, ringColor: ringColor)
-                    
-                    VStack {
-                        if remaining >= 0 {
-                            Text("\(remaining)")
-                                .font(.title)
-                                .fontWeight(.bold)
-                            Text("Remaining")
-                                .font(.subheadline)
-                        } else {
-                            // Display absolute value when over the goal
-                            Text("\(abs(remaining))")
-                                .font(.title)
-                                .fontWeight(.bold)
-                            Text("Over")
-                                .font(.subheadline)
-                        }
-                    }
-                }
-                .padding(.top, 8)
-                
-                // MARK: - Macros (Placeholder Data)
-                HStack(spacing: 40) {
-                    VStack {
-                        Text("Carbs")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                        Text("50/200 g")
-                            .font(.headline)
-                    }
-                    
-                    VStack {
-                        Text("Protein")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                        Text("60/150 g")
-                            .font(.headline)
-                    }
-                    
-                    VStack {
-                        Text("Fats")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                        Text("30/70 g")
-                            .font(.headline)
-                    }
-                }
-                .padding(.vertical)
-                
-                // MARK: - Meals List with Dynamic Progress Rings
-                VStack(spacing: 16) {
-                    MealRowView(
-                        iconName: "sunrise.fill",
-                        mealName: "Breakfast",
-                        currentCalories: breakfastCalories,
-                        totalCalories: 500
-                    )
-                    MealRowView(
-                        iconName: "sun.max.fill",
-                        mealName: "Lunch",
-                        currentCalories: lunchCalories,
-                        totalCalories: 600
-                    )
-                    MealRowView(
-                        iconName: "moon.stars.fill",
-                        mealName: "Dinner",
-                        currentCalories: dinnerCalories,
-                        totalCalories: 700
-                    )
-                    MealRowView(
-                        iconName: "takeoutbag.and.cup.and.straw.fill",
-                        mealName: "Snacks",
-                        currentCalories: snackCalories,
-                        totalCalories: 300
-                    )
-                }
-                .padding(.horizontal)
                 
                 Spacer()
+                
+                Text(formattedDate)
+                    .font(.headline)
+                
+                Spacer()
+                
+                Button(action: {
+                    if let newDate = Calendar.current.date(byAdding: .day, value: 1, to: selectedDate) {
+                        selectedDate = newDate
+                    }
+                }) {
+                    Image(systemName: "chevron.right")
+                        .font(.title)
+                        .foregroundColor(.blue)
+                }
             }
-            .navigationBarHidden(true)
+            .padding(.horizontal)
+            .padding(.top, 16)
+            
+            // Daily Progress Ring
+            ZStack {
+                DailyProgressRing(progress: progress, ringColor: ringColor)
+                VStack {
+                    if remaining >= 0 {
+                        Text("\(remaining)")
+                            .font(.title)
+                            .fontWeight(.bold)
+                        Text("Remaining")
+                            .font(.subheadline)
+                    } else {
+                        Text("\(abs(remaining))")
+                            .font(.title)
+                            .fontWeight(.bold)
+                        Text("Over")
+                            .font(.subheadline)
+                    }
+                }
+            }
+            .padding(.top, 8)
+            
+            // Macros Section (Placeholder data)
+            HStack(spacing: 40) {
+                VStack {
+                    Text("Carbs")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    Text("50/200 g")
+                        .font(.headline)
+                }
+                
+                VStack {
+                    Text("Protein")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    Text("60/150 g")
+                        .font(.headline)
+                }
+                
+                VStack {
+                    Text("Fats")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
+                    Text("30/70 g")
+                        .font(.headline)
+                }
+            }
+            .padding(.vertical)
+            
+            // Sample Meals List (Reusable MealRowView instances)
+            VStack(spacing: 16) {
+                MealRowView(iconName: "sunrise.fill", mealName: "Breakfast", currentCalories: breakfastCalories, totalCalories: 500)
+                MealRowView(iconName: "sun.max.fill", mealName: "Lunch", currentCalories: lunchCalories, totalCalories: 600)
+                MealRowView(iconName: "moon.stars.fill", mealName: "Dinner", currentCalories: dinnerCalories, totalCalories: 700)
+                MealRowView(iconName: "takeoutbag.and.cup.and.straw.fill", mealName: "Snacks", currentCalories: snackCalories, totalCalories: 300)
+            }
+            .padding(.horizontal)
+            
+            Spacer()
         }
-        .navigationViewStyle(StackNavigationViewStyle())
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
     }
 }
 
-// MARK: - DailyProgressRing View
+// MARK: - DailyProgressRing
 struct DailyProgressRing: View {
-    let progress: Double  // 0.0 to 1.0
+    let progress: Double  // Expected range: 0.0 to 1.0
     let ringColor: Color
     var size: CGFloat = 120
     var lineWidth: CGFloat = 10
@@ -170,25 +146,24 @@ struct DailyProgressRing: View {
             Circle()
                 .stroke(Color.gray.opacity(0.3), lineWidth: lineWidth)
                 .frame(width: size, height: size)
-            
-            // Foreground progress
+            // Foreground progress ring
             Circle()
                 .trim(from: 0, to: CGFloat(progress))
                 .stroke(ringColor, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
-                .rotationEffect(Angle(degrees: -90))
+                .rotationEffect(.degrees(-90))
                 .frame(width: size, height: size)
         }
     }
 }
 
-// MARK: - MealRowView (Reusable)
+// MARK: - MealRowView (Reusable for Meal Rows)
 struct MealRowView: View {
     let iconName: String
     let mealName: String
     let currentCalories: Int
     let totalCalories: Int
     
-    // Calculate the progress for this meal
+    // Calculate progress for the meal's consumption
     var progress: Double {
         guard totalCalories > 0 else { return 0 }
         return min(Double(currentCalories) / Double(totalCalories), 1.0)
@@ -199,16 +174,11 @@ struct MealRowView: View {
             Image(systemName: iconName)
                 .font(.title2)
                 .foregroundColor(.green)
-            
             Text(mealName)
                 .font(.headline)
-            
             Spacer()
-            
             Text("\(currentCalories)/\(totalCalories) Cal")
                 .font(.subheadline)
-            
-            // Dynamic progress ring for this meal
             ProgressRing(progress: progress)
         }
         .padding(.vertical, 4)
@@ -217,7 +187,7 @@ struct MealRowView: View {
 
 // MARK: - ProgressRing (Reusable for Meal Rows)
 struct ProgressRing: View {
-    let progress: Double  // 0.0 to 1.0
+    let progress: Double  // Expected range: 0.0 to 1.0
     var lineWidth: CGFloat = 4
     var size: CGFloat = 24
     
@@ -229,12 +199,13 @@ struct ProgressRing: View {
             Circle()
                 .trim(from: 0, to: CGFloat(progress))
                 .stroke(Color.green, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
-                .rotationEffect(Angle(degrees: -90))
+                .rotationEffect(.degrees(-90))
                 .frame(width: size, height: size)
         }
     }
 }
 
+// MARK: - Preview
 struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
         DashboardView()
