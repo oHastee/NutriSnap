@@ -31,17 +31,17 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		11BF9E382D73A4C600CBDC8F /* NutriSnap */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
+			isa = PBXGroup;
 			path = NutriSnap;
 			sourceTree = "<group>";
 		};
 		11BF9E492D73A4C800CBDC8F /* NutriSnapTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
+			isa = PBXGroup;
 			path = NutriSnapTests;
 			sourceTree = "<group>";
 		};
 		11BF9E532D73A4C800CBDC8F /* NutriSnapUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
+			isa = PBXGroup;
 			path = NutriSnapUITests;
 			sourceTree = "<group>";
 		};
